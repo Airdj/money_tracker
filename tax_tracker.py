@@ -39,12 +39,26 @@ def sort_by_date():
     return sort_dates
 
 
+def sort_by_category():
+    pass
+
+
+def sort_select():
+    pass
+
+
 def sum_amount():
     y = sanitize_data(input('\nYear: ') or '%')
     m = sanitize_data(input('Month: ') or '%')
     d = sanitize_data(input('Day: ') or '%')
     whole_amount = f'SELECT SUM(amount) AS Total FROM outgoings WHERE CAST(created_on as TEXT) LIKE \'{y}-{m}-{d}\';'
     return whole_amount
+
+
+def list_categories():
+    list_cat = 'SELECT DISTINCT category FROM outgoings;'
+    x = get_response(list_cat,0)
+    return x
 
 
 def execute_statement(statement):
@@ -74,10 +88,15 @@ def get_response(statement, flag):
         answ_list = []
         answer = cur.fetchone()
         while answer is not None:
-            if flag:
+            if flag == 1:
                 print(f'Category: {answer[1]}\nDescription: {answer[2]}\nAmount: {answer[3]}\nDate created: {answer[5]}\n')
-            else:
+            elif flag == 5:
+                for i in answer:
+                    print(i, end=',')
+            elif flag == 3:
                 print(f'Total amount: {answer[0]}\n')
+            else:
+                pass
             answ_list.append(answer)
             answer = cur.fetchone()
         cur.close()
@@ -88,7 +107,8 @@ def get_response(statement, flag):
         if conn is not None:
             #print(answ_list)
             conn.close()
-            print('Database connection closed.')
+            print('\nDatabase connection closed.')
+    return answ_list
 
 
 def show_menu():
@@ -98,7 +118,7 @@ def show_menu():
         add - add new data.
         sort - sort data by date.
         sum - sum your outgoings.
-        quit - quit program.''')
+        quit - quit program.\n''')
         option = input('What would you like to do?')
         menu(option)
 
@@ -113,14 +133,15 @@ def menu(option):
     elif option == 'sort':
         return get_response(menu_dict[option](), 1)
     elif option == 'sum':
-        return get_response(menu_dict[option](), 0)
+        return get_response(menu_dict[option](), 3)
     else:
         return execute_statement(menu_dict[option]())
 
 
 def main():
-    execute_statement(check_or_create_table())
-    show_menu()
+    #execute_statement(check_or_create_table())
+    #show_menu()
+    print(list_categories())
 
 
 if __name__ == '__main__':

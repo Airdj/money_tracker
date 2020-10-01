@@ -2,6 +2,7 @@
 from db_config import config
 import psycopg2
 import re
+import sys
 
 
 def sanitize_data(data):
@@ -20,9 +21,9 @@ def check_or_create_table():
 
 
 def add_bill():
-    c = input('\nChoose category of your bill: (Food,Others,Tax) ')
-    d = input('Write a short description: ')
-    a = input('Amount: ')
+    c = sanitize_data(input('\nChoose category of your bill: (Food,Others,Tax) '))
+    d = sanitize_data(input('Write a short description: '))
+    a = sanitize_data(input('Amount: '))
     if a.isdigit():
         statement = f'INSERT INTO outgoings(category,description,amount) VALUES(\'{c}\',\'{d}\',{a});'
         return statement
@@ -39,9 +40,9 @@ def sort_by_date():
 
 
 def sum_amount():
-    y = input('\nYear: ') or '%'
-    m = input('Month: ') or '%'
-    d = input('Day: ') or '%'
+    y = sanitize_data(input('\nYear: ') or '%')
+    m = sanitize_data(input('Month: ') or '%')
+    d = sanitize_data(input('Day: ') or '%')
     whole_amount = f'SELECT SUM(amount) AS Total FROM outgoings WHERE CAST(created_on as TEXT) LIKE \'{y}-{m}-{d}\';'
     return whole_amount
 
@@ -90,12 +91,36 @@ def get_response(statement, flag):
             print('Database connection closed.')
 
 
+def show_menu():
+    while 1:
+        print('''
+        Menu:
+        add - add new data.
+        sort - sort data by date.
+        sum - sum your outgoings.
+        quit - quit program.''')
+        option = input('What would you like to do?')
+        menu(option)
+
+
+def menu(option):
+    menu_dict = {'add': add_bill, 'sort': sort_by_date, 'sum': sum_amount, 'quit': sys.exit}
+    if option not in menu_dict:
+        print('Wrong option.')
+        sys.exit()
+    elif option == 'quit':
+        menu_dict[option]()
+    elif option == 'sort':
+        return get_response(menu_dict[option](), 1)
+    elif option == 'sum':
+        return get_response(menu_dict[option](), 0)
+    else:
+        return execute_statement(menu_dict[option]())
+
+
 def main():
     execute_statement(check_or_create_table())
-    execute_statement(add_bill())
-    get_response(sort_by_date(), 1)
-    get_response(sum_amount(), 0)
-
+    show_menu()
 
 
 if __name__ == '__main__':

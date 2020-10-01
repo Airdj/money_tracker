@@ -40,8 +40,9 @@ def sort_by_date():
 
 
 def sort_by_category():
-    pass
-
+    c = sanitize_data(input('Category:') or '%')
+    sort_categories = f'SELECT * FROM outgoings WHERE category LIKE \'{c}\';'
+    return sort_categories
 
 def sort_select():
     pass
@@ -57,8 +58,7 @@ def sum_amount():
 
 def list_categories():
     list_cat = 'SELECT DISTINCT category FROM outgoings;'
-    x = get_response(list_cat,0)
-    return x
+    return list_cat
 
 
 def execute_statement(statement):
@@ -90,7 +90,7 @@ def get_response(statement, flag):
         while answer is not None:
             if flag == 1:
                 print(f'Category: {answer[1]}\nDescription: {answer[2]}\nAmount: {answer[3]}\nDate created: {answer[5]}\n')
-            elif flag == 5:
+            elif flag == 2:
                 for i in answer:
                     print(i, end=',')
             elif flag == 3:
@@ -108,7 +108,6 @@ def get_response(statement, flag):
             #print(answ_list)
             conn.close()
             print('\nDatabase connection closed.')
-    return answ_list
 
 
 def show_menu():
@@ -117,14 +116,15 @@ def show_menu():
         Menu:
         add - add new data.
         sort - sort data by date.
-        sum - sum your outgoings.
+        list - list categories.
+        sum - sum your outgoings by date.
         quit - quit program.\n''')
         option = input('What would you like to do?')
         menu(option)
 
 
 def menu(option):
-    menu_dict = {'add': add_bill, 'sort': sort_by_date, 'sum': sum_amount, 'quit': sys.exit}
+    menu_dict = {'add': add_bill, 'sort': sort_by_date, 'list': list_categories, 'sum': sum_amount, 'quit': sys.exit}
     if option not in menu_dict:
         print('Wrong option.')
         sys.exit()
@@ -132,6 +132,8 @@ def menu(option):
         menu_dict[option]()
     elif option == 'sort':
         return get_response(menu_dict[option](), 1)
+    elif option == 'list':
+        return get_response(menu_dict[option](), 2)
     elif option == 'sum':
         return get_response(menu_dict[option](), 3)
     else:
@@ -140,8 +142,8 @@ def menu(option):
 
 def main():
     #execute_statement(check_or_create_table())
-    #show_menu()
-    print(list_categories())
+    show_menu()
+    #get_response(list_categories(), 2)
 
 
 if __name__ == '__main__':

@@ -44,6 +44,7 @@ def sort_by_category():
     sort_categories = f'SELECT * FROM outgoings WHERE category LIKE \'{c}\';'
     return sort_categories
 
+
 def sort_select():
     pass
 
@@ -115,7 +116,8 @@ def show_menu():
         print('''
         Menu:
         add - add new data.
-        sort - sort data by date.
+        sortbd - sort data by date.
+        sortbc - sort data by category.
         list - list categories.
         sum - sum your outgoings by date.
         quit - quit program.\n''')
@@ -124,13 +126,14 @@ def show_menu():
 
 
 def menu(option):
-    menu_dict = {'add': add_bill, 'sort': sort_by_date, 'list': list_categories, 'sum': sum_amount, 'quit': sys.exit}
+    menu_dict = {'add': add_bill, 'sortbd': sort_by_date, 'sortbc': sort_by_category, 'list': list_categories,
+                 'sum': sum_amount, 'quit': sys.exit}
     if option not in menu_dict:
         print('Wrong option.')
         sys.exit()
     elif option == 'quit':
         menu_dict[option]()
-    elif option == 'sort':
+    elif option == 'sortbd' or 'sortbc':
         return get_response(menu_dict[option](), 1)
     elif option == 'list':
         return get_response(menu_dict[option](), 2)
@@ -144,7 +147,7 @@ def main():
     #execute_statement(check_or_create_table())
     show_menu()
     #get_response(list_categories(), 2)
-
+    #print(get_response(sort_by_date(),0))
 
 if __name__ == '__main__':
     main()

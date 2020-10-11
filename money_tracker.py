@@ -45,10 +45,6 @@ def sort_by_category():
     return sort_categories
 
 
-def sort_select():
-    pass
-
-
 def sum_amount():
     y = sanitize_data(input('\nYear: ') or '%')
     m = sanitize_data(input('Month: ') or '%')
@@ -93,7 +89,7 @@ def get_response(statement, flag):
                 print(f'Category: {answer[1]}\nDescription: {answer[2]}\nAmount: {answer[3]}\nDate created: {answer[5]}\n')
             elif flag == 2:
                 for i in answer:
-                    print(i, end=',')
+                    print(i)
             elif flag == 3:
                 print(f'Total amount: {answer[0]}\n')
             else:
@@ -106,7 +102,6 @@ def get_response(statement, flag):
         print(e)
     finally:
         if conn is not None:
-            #print(answ_list)
             conn.close()
             print('\nDatabase connection closed.')
 
@@ -131,23 +126,25 @@ def menu(option):
     if option not in menu_dict:
         print('Wrong option.')
         sys.exit()
-    elif option == 'quit':
-        menu_dict[option]()
-    elif option == 'sortbd' or 'sortbc':
-        return get_response(menu_dict[option](), 1)
-    elif option == 'list':
-        return get_response(menu_dict[option](), 2)
-    elif option == 'sum':
-        return get_response(menu_dict[option](), 3)
     else:
-        return execute_statement(menu_dict[option]())
+        if option == 'add':
+            execute_statement(menu_dict[option]())
+        elif option == 'sortbd':
+            get_response(menu_dict[option](), 1)
+        elif option == 'sortbc':
+            get_response(menu_dict[option](), 1)
+        elif option == 'list':
+            get_response(menu_dict[option](), 2)
+        elif option == 'sum':
+            get_response(menu_dict[option](), 3)
+        elif option == 'quit':
+            menu_dict[option]()
 
 
 def main():
-    #execute_statement(check_or_create_table())
+    execute_statement(check_or_create_table())
     show_menu()
-    #get_response(list_categories(), 2)
-    #print(get_response(sort_by_date(),0))
+
 
 if __name__ == '__main__':
     main()
